@@ -6,31 +6,66 @@ import {
   RadioGroup, 
   FormControlLabel, 
   Radio, 
-  TextField, 
+  TextField,
   Box,
   InputLabel,
   Select,
   MenuItem,
-  Checkbox
+  Checkbox,
+  List,
+  Button,
   } from '@mui/material';
+  import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
+
+import axios from 'axios'
 
 function App() {
   const [type, setType] = useState('')
   const [fromAirport, setFromAirport] = useState('')
   const [toAirport, setToAirport] = useState('')
   const [isMilitary, setIsMilitary] = useState(false);
+  const [departureDate, setDepartureDate] = useState('')
+  const [returnDate, setReturnDate] = useState('')
+  const [numberOfPassanger, setNumberOfPassanger] = useState('')
+  const [currency, setCurrency] = useState(false);
   const [isVaccinated, setIsVaccinated] = useState(false);
   const [isDocter, setIsDocter] = useState(false);
   const [isStudent, setIsStudent] = useState(false);
+  const [isSearchingFlights, setIsSearchingFlights] = useState(false);
 
+  const rows = [
+    { id: 1, from: 'delhi', firstName: 'mumbai', price: 3500 },
+    { id: 2, from: 'mumbai', firstName: 'chennai', price: 4200 },
+    { id: 3, from: 'chenai', firstName: 'konkata', price: 45 },
+    { id: 4, from: 'kolkata', firstName: 'delhi', price: 16 },
+  ];
 
-const onFormSubmit = (e) => {
-  console.log(e)
+  const columns: GridColDef[]  = [
+    { field: 'id', headerName: 'ID', width: 70 },
+    { field: 'firstName', headerName: 'First name', width: 130 },
+    { field: 'lastName', headerName: 'Last name', width: 130 },
+    { field: 'price', headerName: 'Price', type: 'number', width: 90 }
+  ];
+  
+
+const bookFlight = async (e) => {
+  setIsSearchingFlights(true);
+  const resp = await axios.post('http://localhost:3300/bookings', {
+    name: 'prakash',
+    fromAirport,
+    toAirport,
+    type,
+    departureDate,
+    returnDate,
+    currency,
+    numberOfPassanger
+  });
+  console.log(resp);
 }
 
   return (
     <div className="App">
-      <FormControl onSubmit={onFormSubmit}>
+      <FormControl>
         <FormLabel id="ticket-Booking"></FormLabel>
         <RadioGroup
           row
@@ -76,7 +111,21 @@ const onFormSubmit = (e) => {
           <MenuItem value="BANGOLURU">Bangoluru</MenuItem>
           <MenuItem value="HYDERABAD">Hyderabad</MenuItem>
         </Select>
+        <TextField id="outlined-basic" label="Departure" variant="outlined" value={departureDate} />
+
       </Box>
+      <Box
+      component="form"
+      sx={{
+        '& > :not(style)': { m: 1, width: '25ch' },
+      }}
+      noValidate
+      autoComplete="off"
+    >
+      <TextField id="outlined-basic" label="Return Date" variant="outlined" value={returnDate} disabled={type === 'roundTrip'}/> 
+      <TextField id="outlined-basic" label="Number of Passangers" variant="outlined" value={numberOfPassanger}/>
+      <TextField id="outlined-basic" label="Amount In Currency" variant="outlined" value={currency}/>
+    </Box>
       <Box
       component="form"
       sx={{
@@ -106,7 +155,22 @@ const onFormSubmit = (e) => {
         inputProps={{ 'aria-label': 'controlled' }}
       />} label="Vaccinated" />
     </Box>
-    </FormControl>
+
+    {!isSearchingFlights && <Button variant="contained" style={{ width: '200px', textAlign: 'center' }} onClick={e => setIsSearchingFlights(true)}>Search Flight</Button>}
+    {isSearchingFlights && <Button variant="contained" onClick={e => bookFlight(true)}>Book Flight</Button>}
+
+    {isSearchingFlights && <DataGrid
+        rows={rows}
+        columns={columns}
+        initialState={{
+          pagination: {
+            paginationModel: { page: 0, pageSize: 5 },
+          },
+        }}
+        pageSizeOptions={[5, 10]}
+        checkboxSelection
+      />}
+      </FormControl>
     </div>
   );
 }
