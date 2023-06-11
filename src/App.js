@@ -26,8 +26,8 @@ function App() {
   const [isMilitary, setIsMilitary] = useState(false);
   const [departureDate, setDepartureDate] = useState('')
   const [returnDate, setReturnDate] = useState('')
-  const [numberOfPassanger, setNumberOfPassanger] = useState('')
-  const [currency, setCurrency] = useState(false);
+  const [numberOfPassanger, setNumberOfPassanger] = useState('1')
+  const [currency, setCurrency] = useState('INR');
   const [isVaccinated, setIsVaccinated] = useState(false);
   const [isDocter, setIsDocter] = useState(false);
   const [isStudent, setIsStudent] = useState(false);
@@ -58,7 +58,7 @@ const bookFlight = async (e) => {
     departureDate,
     returnDate,
     currency,
-    numberOfPassanger
+    numberOfPassanger,
   });
   console.log(resp);
 }
